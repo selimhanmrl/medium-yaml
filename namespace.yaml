@@ -1,4 +1,8 @@
 apiVersion: v1
 kind: Namespace
 metadata:
+<<<<<<< HEAD
   name: medium
+=======
+  name: medium
+>>>>>>> ea513993595c5c7f715947f131a51ab6a2fcd589
