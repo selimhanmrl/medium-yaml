@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: custom-nginx
-        image: 192.168.1.103:8082/custom-nginx:1.2
+        image: 192.168.1.103:8082/custom-nginx:1.3
         ports:
         - containerPort: 80
 ---
