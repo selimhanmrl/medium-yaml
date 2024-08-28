@@ -9,14 +9,14 @@ phases:
       - pip install --upgrade awscli
       - curl -LO "https://dl.k8s.io/release/v1.30.2/bin/linux/amd64/kubectl"
       - chmod +x ./kubectl
-      - mv ./kubectl /usr/local/bin/kubectl
-      - kubectl version
+      - mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$HOME/bin:$PATH
+      - kubectl version --short --client
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
       - aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION
       - echo Authenticating with the EKS cluster...
-      - aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_DEFAULT_REGION
+      - aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_DEFAULT_REGION  --profile anotheracc
       - kubectl get nodes # Verify authentication
 
   build:
