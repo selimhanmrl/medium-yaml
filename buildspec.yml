@@ -9,7 +9,11 @@ phases:
       - pip install --upgrade awscli
       - curl -LO "https://dl.k8s.io/release/v1.30.2/bin/linux/amd64/kubectl"
       - chmod +x ./kubectl
-      - mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$HOME/bin:$PATH
+      - mv ./kubectl /usr/local/bin/kubectl
+      - echo Installing aws-iam-authenticator...
+      - curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.18.9/2020-11-02/bin/linux/amd64/aws-iam-authenticator
+      - chmod +x ./aws-iam-authenticator
+      - mv ./aws-iam-authenticator /usr/local/bin
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
@@ -20,6 +24,8 @@ phases:
       - cat $HOME/.kube/config
       - echo "AWS CLI configuration:"
       - aws configure list
+      - echo "IAM Role ARN:"
+      - curl http://169.254.169.254/latest/meta-data/iam/security-credentials/
       - kubectl get nodes # Verify authentication
   build:
     commands:
