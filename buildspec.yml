@@ -21,8 +21,6 @@ phases:
      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
      - echo Authenticating with the EKS cluster...
      - aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_DEFAULT_REGION --role-arn arn:aws:iam::$AWS_ACCOUNT_ID:role/YourEKSRole
-     - echo "Kubeconfig file content:"
-     - cat $HOME/.kube/config
      - echo "AWS CLI configuration:"
      - aws configure list
      - echo "Verifying IAM Role Access..."
