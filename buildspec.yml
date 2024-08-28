@@ -5,30 +5,22 @@ phases:
     runtime-versions:
       python: 3.8
     commands:
-    - echo Logging in to Amazon ECR...
-    - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
-    - echo Authenticating with the EKS cluster...
-    - aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_DEFAULT_REGION
-    - echo "Kubeconfig file content:"
-    - cat $HOME/.kube/config
-    - echo "AWS CLI configuration:"
-    - aws configure list
-    - echo "Verifying IAM Role Access..."
-    - aws sts get-caller-identity
-    - kubectl get nodes # Verify authentication
+      - echo Installing dependencies...
+      - pip install --upgrade awscli
+      - curl -LO "https://dl.k8s.io/release/v1.30.2/bin/linux/amd64/kubectl"
+      - chmod +x ./kubectl
+      - mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$HOME/bin:$PATH
   pre_build:
     commands:
-      - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
-      - echo Authenticating with the EKS cluster...
-      - aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_DEFAULT_REGION
-      - echo "Kubeconfig file content:"
-      - cat $HOME/.kube/config
-      - echo "AWS CLI configuration:"
-      - aws configure list
-      - echo "IAM Role ARN:"
-      - curl http://169.254.169.254/latest/meta-data/iam/security-credentials/
-      - kubectl get nodes # Verify authentication
+     - echo Logging in to Amazon ECR...
+     - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+     - echo Authenticating with the EKS cluster...
+     - aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_DEFAULT_REGION
+     - echo "Kubeconfig file content:"
+     - cat $HOME/.kube/config
+     - echo "AWS CLI configuration:"
+     - aws configure list
+     - kubectl get nodes # Verify authentication
   build:
     commands:
       - echo Applying Kubernetes manifests...
