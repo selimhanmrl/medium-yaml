@@ -15,7 +15,7 @@ phases:
       - echo Logging in to Amazon ECR...
       - aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION
       - echo Authenticating with the EKS cluster...
-      - aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_DEFAULT_REGION  --role-arn arn:aws:iam::$AWS_ACCOUNT_ID:role/eks-cluster-role
+      - aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_DEFAULT_REGION
       - kubectl get nodes # Verify authentication
 
   build:
