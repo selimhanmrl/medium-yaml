@@ -5,15 +5,17 @@ phases:
     runtime-versions:
       python: 3.8
     commands:
-      - echo Installing dependencies...
-      - pip install --upgrade awscli
-      - curl -LO "https://dl.k8s.io/release/v1.30.2/bin/linux/amd64/kubectl"
-      - chmod +x ./kubectl
-      - mv ./kubectl /usr/local/bin/kubectl
-      - echo Installing aws-iam-authenticator...
-      - curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.18.9/2020-11-02/bin/linux/amd64/aws-iam-authenticator
-      - chmod +x ./aws-iam-authenticator
-      - mv ./aws-iam-authenticator /usr/local/bin
+    - echo Logging in to Amazon ECR...
+    - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+    - echo Authenticating with the EKS cluster...
+    - aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_DEFAULT_REGION
+    - echo "Kubeconfig file content:"
+    - cat $HOME/.kube/config
+    - echo "AWS CLI configuration:"
+    - aws configure list
+    - echo "Verifying IAM Role Access..."
+    - aws sts get-caller-identity
+    - kubectl get nodes # Verify authentication
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
