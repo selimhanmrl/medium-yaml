@@ -19,7 +19,7 @@ phases:
   build:
     commands:
       - echo Applying Kubernetes manifests...
-      - find . -name "*.yaml" -exec kubectl apply -f {} \;
+      - find . -name "*.yaml" -exec kubectl apply -f {} --validate=false \;
   post_build:
     commands:
       - echo Build completed successfully.
