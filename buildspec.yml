@@ -3,32 +3,26 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      python: 3.8
+      docker: 19
+      kubectl: 1.18
     commands:
-      - echo Installing dependencies...
+      - echo "Installing dependencies..."
       - pip install --upgrade awscli
-      - curl -LO "https://dl.k8s.io/release/v1.30.2/bin/linux/amd64/kubectl"
-      - chmod +x ./kubectl
-      - mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$HOME/bin:$PATH
+      - echo "Dependencies installed."
   pre_build:
     commands:
-     - echo Logging in to Amazon ECR...
-     - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
-     - echo Authenticating with the EKS cluster...
-     - aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_DEFAULT_REGION
-     - export KUBECONFIG=$HOME/.kube/config
-     - echo "Kubeconfig file content:"
-     - cat $HOME/.kube/config
-     - echo "AWS CLI configuration:"
-     - aws configure list
-     - kubectl get nodes # Verify authentication
+      - echo "Logging in to Amazon ECR..."
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - echo "Pulling base image..."
   build:
     commands:
-      - echo Applying Kubernetes manifests...
-      - find . -name "*.yaml" -exec kubectl apply -f {} --validate=false \;
+      - echo "Updating EKS cluster..."
+      - aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_DEFAULT_REGION
+      - find . -name "*.yaml" -exec kubectl apply -f {} \;
+      - echo "EKS cluster updated."
   post_build:
     commands:
-      - echo Build completed successfully.
+      - exho "DONE"
 
 artifacts:
   files:
