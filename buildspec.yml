@@ -11,13 +11,20 @@ phases:
       - chmod +x ./kubectl
       - mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
       - echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
-      - echo Logging in to Amazon EKS...
-      - aws eks get-token --cluster-name $CLUSTER_NAME | kubectl apply -f -
+      - echo "AWS Identity:"
+      - aws sts get-caller-identity
+      - echo "Available EKS clusters:"
+      - aws eks list-clusters
+      - echo "Cluster name: $CLUSTER_NAME"
+      - echo "Updating kubeconfig..."
+      - aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_DEFAULT_REGION
+      - echo "Retrieving EKS token..."
+      - TOKEN=$(aws eks get-token --cluster-name $CLUSTER_NAME)
+      - echo "Applying token to kubectl..."
+      - echo $TOKEN | kubectl apply -f -
   build:
     commands:
       - echo Build started on `date`
-      - echo Updating kube config...
-      - aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_DEFAULT_REGION
   post_build:
     commands:
       - echo Deploying to EKS...
