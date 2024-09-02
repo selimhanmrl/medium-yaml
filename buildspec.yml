@@ -14,6 +14,7 @@ phases:
     commands:
       - echo Logging in to Amazon EKS...
       - aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_DEFAULT_REGION
+      - aws sts get-caller-identity
       - cat ~/.kube/config # Debug: Check kubeconfig content
       - kubectl get nodes # Debug: Verify kubectl can access the cluster
   build:
