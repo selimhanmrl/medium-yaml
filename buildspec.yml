@@ -3,26 +3,17 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      python: 3.8
+      kubectl: 1.18
     commands:
-      - echo Installing dependencies...
-      - pip install --upgrade awscli
-      - curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.18.9/2020-11-02/bin/linux/amd64/kubectl
+      - echo Installing kubectl
+      - curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
       - chmod +x ./kubectl
-      - mv ./kubectl /usr/local/bin
+      - mv ./kubectl /usr/local/bin/kubectl
   pre_build:
     commands:
-      - echo Logging in to Amazon EKS...
-      - aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $CLUSTER_NAME --role-arn arn:aws:iam::$AWS_ACCOUNT_ID:role/eks-codebuild-role
-      #- aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_DEFAULT_REGION
-      - aws sts get-caller-identity
-      - cat ~/.kube/config # Debug: Check kubeconfig content
-      - kubectl get nodes # Debug: Verify kubectl can access the cluster
+      - echo Logging in to Amazon EKS
+      - aws eks update-kubeconfig --name $CLUSTER_NAME
   build:
     commands:
-      - echo Applying Kubernetes manifests...
+      - echo Applying Kubernetes manifests
       - find . -name "*.yaml" -exec kubectl apply -f {} \;
-artifacts:
-  files:
-    - '**/*'
-  discard-paths: yes
