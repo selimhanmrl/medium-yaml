@@ -2,10 +2,8 @@ version: 0.2
 
 phases:
   install:
-    runtime-versions:
-      kubectl: 1.21
     commands:
-      - echo Installing dependencies...
+      - echo Installing kubectl...
       - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
       - chmod +x kubectl
       - mv kubectl /usr/local/bin/
@@ -20,7 +18,7 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Applying Kubernetes manifests...
-      - find . -name "*.yaml" -exec kubectl apply -f {} \;
+      - kubectl apply -f k8s-manifests/
 
   post_build:
     commands:
