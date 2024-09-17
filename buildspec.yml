@@ -18,7 +18,7 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Applying Kubernetes manifests...
-      - find k8s-manifests/ -name '*.yaml' -exec kubectl apply -f {} --validate=false \;
+      - find ./ -name '*.yaml' -exec kubectl apply -f {} --validate=false \;
 
   post_build:
     commands:
