@@ -3,17 +3,30 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      kubectl: 1.18
+      kubectl: 1.21
     commands:
-      - echo Installing kubectl
-      - curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
-      - chmod +x ./kubectl
-      - mv ./kubectl /usr/local/bin/kubectl
+      - echo Installing dependencies...
+      - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+      - chmod +x kubectl
+      - mv kubectl /usr/local/bin/
+      - echo Setting up kubeconfig...
+      - aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_DEFAULT_REGION
+
   pre_build:
     commands:
-      - echo Logging in to Amazon EKS
-      - aws eks update-kubeconfig --name $CLUSTER_NAME
+      - echo Pre-build phase...
+
   build:
     commands:
-      - echo Applying Kubernetes manifests
+      - echo Build started on `date`
+      - echo Applying Kubernetes manifests...
       - find . -name "*.yaml" -exec kubectl apply -f {} \;
+
+  post_build:
+    commands:
+      - echo Build completed on `date`
+
+artifacts:
+  files:
+    - '**/*'
+  discard-paths: yes
