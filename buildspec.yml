@@ -18,7 +18,7 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Applying Kubernetes manifests...
-      - kubectl apply -f k8s-manifests/
+      - kubectl apply -f .
 
   post_build:
     commands:
